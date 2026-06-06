@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفة حج النبي ﷺ - حديث جابر</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js" type="module"></script>
+
+    <script>
+        window.tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        arabic: ['Amiri', 'serif'],
+                        arabicUI: ['Tajawal', 'sans-serif'],
+                        latin: ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        emerald: { 50: '#ecfdf5', 100: '#d1fae5', 500: '#10b981', 600: '#059669', 800: '#065f46', 900: '#064e3b', 950: '#022c22' },
+                        amber: { 50: '#fffbeb', 100: '#fef3c7', 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f8fafc; font-family: 'Tajawal', sans-serif; overflow-x: hidden; }
+        .latin-text { font-family: 'Poppins', sans-serif; direction: ltr; text-align: left; }
+        .arabic-text { 
+            font-family: 'Amiri', serif; 
+            line-height: 2.8 !important; 
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+        
+        .fade-in { animation: fadeIn 0.4s ease-in-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #10b981; border-radius: 4px; }
+
+        .syarah-dropdown {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, opacity 0.3s ease;
+            opacity: 0;
+        }
+        .syarah-dropdown.open {
+            max-height: 3000px;
+            opacity: 1;
+            padding-top: 1rem;
+        }
+
+        .rotate-180 { transform: rotate(180deg); }
+
+        .typing-indicator span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background-color: #059669;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased selection:bg-emerald-200 selection:text-emerald-900">
+
+    <div id="landingPage" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-emerald-950 via-emerald-900 to-emerald-700 text-white p-6 transition-opacity duration-500">
+        <div class="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMSI+PHBhdGggZD0iTTM2IDM0dj1sMjIgMjJ2LTRsLTIwLTIweiIvPjwvZz48L2c+PC9zdmc+')]"></div>
+        <div class="relative z-10 text-center max-w-2xl mx-auto space-y-6">
+            <span class="inline-block py-1 px-4 rounded-full bg-emerald-800/50 text-emerald-100 text-sm font-semibold border border-emerald-500/30 backdrop-blur-sm latin-text tracking-wider">KITAB AL-HAJJ</span>
+            <h1 class="text-5xl md:text-7xl font-extrabold arabicUI leading-tight text-amber-400 drop-shadow-lg">صِفَةُ حَجِّ النَّبِيِّ ﷺ</h1>
+            <p class="text-xl md:text-2xl text-emerald-100 font-light latin-text text-center">Berdasarkan Hadits Jabir bin Abdullah r.a.</p>
+            <button onclick="window.startApp()" class="mt-12 latin-text group relative inline-flex items-center justify-center px-8 py-4 font-bold text-emerald-900 bg-amber-400 rounded-full overflow-hidden shadow-lg shadow-amber-500/30 hover:scale-105 transition-all duration-300">
+                <span class="relative z-10 flex items-center gap-2">Mulai Membaca <span class="text-xl group-hover:translate-x-1 transition-transform">→</span></span>
+            </button>
+        </div>
+    </div>
+
+    <div id="mainApp" class="hidden min-h-[100dvh] flex bg-slate-50 relative">
+        <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/50 z-40 hidden transition-opacity lg:hidden"></div>
+        <aside id="sidebar" class="fixed top-0 bottom-0 right-0 w-72 bg-white shadow-2xl z-50 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col latin-text border-l border-slate-100">
+            <div class="p-6 bg-emerald-900 text-white flex justify-between items-center">
+                <div><h2 class="font-bold text-lg">Materi</h2><p class="text-xs text-emerald-200">Kitab Al-Hajj</p></div>
+                <button id="closeSidebarBtn" class="lg:hidden text-white hover:text-amber-400 p-2 text-2xl">&times;</button>
+            </div>
+            <div class="flex-1 overflow-y-auto py-4" id="navLinks"></div>
+        </aside>
+
+        <main class="flex-1 lg:mr-72 flex flex-col min-h-[100dvh] relative w-full">
+            <header class="lg:hidden sticky top-0 z-30 bg-emerald-900 text-white p-4 shadow-md flex justify-between items-center">
+                <button id="openSidebarBtn" class="p-2 -mr-2 flex flex-col gap-1.5 focus:outline-none"><span class="w-6 h-0.5 bg-white rounded"></span><span class="w-6 h-0.5 bg-white rounded"></span><span class="w-6 h-0.5 bg-white rounded"></span></button>
+                <div class="font-bold arabicUI text-xl text-amber-400">حج النبي ﷺ</div>
+                <div class="w-8"></div>
+            </header>
+
+            <div id="contentContainer" class="flex-1 p-4 md:p-8 max-w-4xl mx-auto w-full">
+                <div id="page-renderer" class="space-y-6"></div>
+                <!-- Spacer agar konten terbawah tidak tertutup navigasi bawah -->
+                <div class="h-32 md:h-40 w-full shrink-0"></div>
+            </div>
+
+            <div class="fixed bottom-0 right-0 left-0 lg:left-0 lg:mr-72 bg-white border-t border-slate-200 p-4 z-30 shadow-[0_-4px_10px_rgba(0,0,0,0.03)] flex justify-between items-center latin-text">
+                <button id="btnPrev" class="flex items-center gap-2 px-4 py-2 text-emerald-700 bg-emerald-50 rounded-lg font-medium hover:bg-emerald-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">← Sebelumnya</button>
+                <div class="text-slate-400 text-sm font-medium">Hal <span id="pageIndicator" class="text-emerald-600 font-bold">1/12</span></div>
+                <button id="btnNext" class="flex items-center gap-2 px-4 py-2 text-white bg-emerald-600 rounded-lg font-medium hover:bg-emerald-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors shadow-md">Selanjutnya →</button>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDuG8GfrOVSqTkUXWvCAqWj1WZ_flMVa3M",
+            authDomain: "quiz-b7b4d.firebaseapp.com",
+            projectId: "quiz-b7b4d",
+            storageBucket: "quiz-b7b4d.firebasestorage.app",
+            messagingSenderId: "255874857840",
+            appId: "1:255874857840:web:443e3929a00db211526db5",
+            measurementId: "G-VTV45NCHRL"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = "haji-interactive-final-fixed";
+
+        let currentUser = null;
+        let currentPage = 0;
+
+        const sections = [
+            { id: 0, title: "Pangkal Haji (269-272)", icon: "📜", cards: [
+                { id: "269", ar: "٢٦٩- والأصل فيه قوله تعالى: {وَلِلَّهِ عَلَى النَّاسِ حِجُّ الْبَيْتِ مَنِ اسْتَطَاعَ إِلَيْهِ سَبِيلًا} [آل عمران: ٩٧].", idn: "269- Hukum asalnya adalah firman Allah Ta'ala: 'Mengerjakan haji adalah kewajiban manusia terhadap Allah, yaitu (bagi) orang yang sanggup mengadakan perjalanan ke Baitullah.' (Ali Imran: 97).", note: "1 فائدة: قرر الشيخ، أن العبد إذا حج بعد بلوغه وقبل حريته، أن حجته هي حجة الإسلام، ولا يلزمه إعادتها بعد حريته. كما قرر الشيخ أن النائب في الحج لا يلزمه أن يكون من بلد المنوب عنه. 'المختارات الجلية، ص: 64'." },
+                { id: "270", ar: "٢٧٠- وَالِاسْتِطَاعَةُ أَعْظَمُ شُرُوطِهِ، وَهِيَ مِلْكُ اَلزَّادِ وَالرَّاحِلَةِ، بَعْدَ ضَرُورَاتِ اَلْإِنْسَانِ وَحَوَائِجِهِ اَلْأَصْلِيَّةِ.", idn: "270- Kemampuan (Istitho'ah) adalah syarat haji yang paling utama, yaitu memiliki bekal perjalanan dan kendaraan, setelah terpenuhinya kebutuhan mendesak dan kebutuhan pokok manusia." },
+                { id: "271", ar: "٢٧١- وَمِنْ اَلِاسْتِطَاعَةِ أَنْ يَكُونَ لِلْمَرْأَةِ مَحْرَمٌ إِذَا اِحْتَاجَ لِسَفَرٍ.", idn: "271- Termasuk bagian dari kemampuan adalah bagi seorang wanita untuk memiliki mahram jika ia membutuhkan perjalanan.", note: "2 في 'ط': 'احتاجت'، وفي 'ب، ط': 'إلى سفر'." },
+                { id: "272", ar: "٢٧٢- وَحَدِيثُ جَابِرٍ فِي حَجِّ اَلنَّبِيِّ صلى الله عليه وسلم يشتمل على أعظم أَحْكَامِ اَلْحَجِّ، وَهُوَ مَا رَوَاهُ مُسْلِمٌ عَنْ جَابِرِ بْنِ عَبْدِ اَللَّهِ رضي الله عنهما،", idn: "272- Hadits Jabir mengenai Haji Nabi ﷺ mencakup hukum-hukum haji yang paling agung, yaitu apa yang diriwayatkan oleh Muslim dari Jabir bin Abdullah r.a.", note: "3 في نسخة 'أ' ما نصه: وقد ذكر في الأصل المنقول منه هذا، حديث جابر بكماله الذي رواه مسلم، وهو يشتمل على معظم أحكام الحج فليرجع إليه. اهـ. ولم يذكر حديث جابر، وهذا يبين أن النسخة التي بأيدينا قد نقلها الشيخ رحمه الله بِخَطِّهِ عن نسخة سابقة، هي أصل الكتاب." }
+            ]},
+            { id: 1, title: "Hadits Jabir: Persiapan (1-2)", icon: "🐪", cards: [
+                { id: "m1", ar: "١- أَنَّ اَلنَّبِيَّ صلى الله عليه وسلم مَكَثَ فِي اَلْمَدِينَةِ تِسْعَ سِنِينَ لَمْ يَحُجَّ، ثُمَّ أَذَّنَ فِي اَلنَّاسِ فِي اَلْعَاشِرَةِ، أَنَّ رَسُولَ اَللَّهِ حَاجٌّ، فَقَدِمَ اَلْمَدِينَةَ بَشَرٌ كَثِيرٌ (كُلُّهُمْ يلتمس أن يأتم الناس بِرَسُولِ اَللَّهِ صلى الله عليه وسلم وَيَعْمَلُ مثله).", idn: "1- Bahwa Nabi ﷺ menetap di Madinah selama sembilan tahun tanpa berhaji, kemudian pada tahun kesepuluh beliau mengumumkan kepada khalayak bahwa Rasulullah akan berhaji. Maka berdatanganlah banyak orang ke Madinah (semuanya berharap untuk mengikuti tuntunan Rasulullah ﷺ dan melakukan hal yang sama).", note: "1 مسلم '1218'. قال النووي '170/8' عن هذا الحديث: 'وهو حديث عظيم، مشتمل على جمل من الفوائد، ونفائس من مهمات القواعد، وهو من أفراد مسلم، لم يروه البخاري في صحيحه... 2 ليست في: 'ب'." },
+                { id: "m2", ar: "٢- فَخَرَجْنَا مَعَهُ حَتَّى إِذَا أَتَيْنَا: ذَا الْحُلَيْفَةِ، فَوَلَدَتْ أَسْمَاءُ بِنْتُ عُمَيْسٍ مُحَمَّدَ بْنَ أَبِي بَكْرٍ، فَأَرْسَلَتْ إِلَى رَسُولِ اَللَّهِ صلى الله عليه وسلم: كَيْفَ أَصْنَعُ؟ قَالَ: \"اِغْتَسِلِي، وَاسْتَثْفِرِي بثوب، وأحرمي\".", idn: "2- Kami pun keluar bersama beliau hingga sampai di Dzul Hulaifah, lalu Asma binti Umais melahirkan Muhammad bin Abu Bakar. Ia mengutus seseorang kepada Rasulullah ﷺ bertanya: 'Apa yang harus aku lakukan?' Beliau bersabda: 'Mandilah, dan balutlah (tempat keluarnya darah) dengan kain (istis-far), lalu berihramlah'.", note: "3 استثفار المرأة، أن تشد على وسطها شيئا، ثم تأخذ خرقة عريضة تجعلها في محل الدم، وتشدها من ورائها وقدامها؛ ليمنع الخارج، وفي معناها: الحفائظ الآن." }
+            ]},
+            { id: 2, title: "Talbiyah & Ihlal (3-6)", icon: "📢", cards: [
+                { id: "m3", ar: "٣- (فصلى رسول الله صلى الله عليه وسلم فِي اَلْمَسْجِدِ)، ثُمَّ رَكِبَ اَلْقَصْوَاءَ حَتَّى إِذَا اِسْتَوَتْ بِهِ نَاقَتُهُ عَلَى اَلْبَيْدَاءِ أهَلَّ بِالتَّوْحِيدِ: \"لَبَّيْكَ اَللَّهُمَّ لَبَّيْكَ، لَبَّيْكَ لَا شَرِيكَ لَكَ لَبَّيْكَ، إِنَّ اَلْحَمْدَ وَالنِّعْمَةَ لَكَ وَالْمُلْكَ، لَا شَرِيكَ لَكَ\".", idn: "3- (Rasulullah ﷺ shalat di masjid), lalu beliau menunggangi Al-Qaswa hingga ketika untanya telah berdiri tegak di Al-Baida', beliau mulai ber-ihlal dengan kalimat tauhid: 'Labbaikallahumma labbaik, Labbaika laa syariika laka labbaik, innal hamda wanni'mata laka wal mulk, laa syariika lak'.", note: "1 ليست في: 'ط'. 2 اسم لناقة النبي صلى الله عليه وسلم. 3- البيداء: الفلاة. 4- لبيك، أي: إجابة لك بعد إجابة." },
+                { id: "m4", ar: "٤- وأهلَّ اَلنَّاسُ بِهَذَا اَلَّذِي يُهِلُّونَ بِهِ، فَلَمْ يَرُدَّ رَسُولُ اَللَّهِ صلى الله عليه وسلم عَلَيْهِمْ شَيْئًا مِنْهُ،", idn: "4- Orang-orang pun ber-ihlal dengan bacaan talbiyah yang biasa mereka ucapkan, dan Rasulullah ﷺ tidak menegur sedikit pun bacaan tersebut.", note: "5- الإهلال: رفع الصوت بالتلبية." },
+                { id: "m5", ar: "٥- وَلَزِمَ رَسُولُ اَللَّهِ صلى الله عليه وسلم تَلْبِيَتَهُ.", idn: "5- Namun Rasulullah ﷺ tetap teguh dengan bacaan talbiyah beliau sendiri." },
+                { id: "m6", ar: "٦- قَالَ جَابِرٌ: لَسْنَا نَنْوِي إِلَّا اَلْحَجَّ، لَسْنَا نَعْرِفُ اَلْعُمْرَةَ.", idn: "6- Jabir berkata: 'Niat kami hanyalah haji, saat itu kami belum mengenal umrah (di bulan haji).'" }
+            ]},
+            { id: 3, title: "Tawaf di Baitullah (7-13)", icon: "🕋", cards: [
+                { id: "m7", ar: "٧- حَتَّى إِذَا أَتَيْنَا اَلْبَيْتَ مَعَهُ اِسْتَلَمَ الركن،", idn: "7- Hingga ketika kami tiba di Baitullah bersama beliau, beliau menyentuh (istilam) Hajar Aswad." },
+                { id: "m8", ar: "٨- فطاف سبعًا،", idn: "8- Kemudian beliau melakukan tawaf sebanyak tujuh putaran.", note: "6- في هامش 'ب' ليس في مسلم 'فطاف سبعا' وما بعدها يغني عنها." },
+                { id: "m9", ar: "٩- فرمل ثلاثًا، ومشى أربعًا،", idn: "9- Beliau melakukan lari-lari kecil (raml) pada tiga putaran pertama, dan berjalan biasa pada empat putaran sisanya.", note: "1 الرمل: الإسراع في المشي مع مقاربة الْخُطا." },
+                { id: "m10", ar: "١٠- ثُمَّ نَفَذَ إِلَى مَقَامِ إِبْرَاهِيمَ فَقَرَأَ: {وَاتَّخِذُوا مِنْ مَقَامِ إِبْرَاهِيمَ مُصَلّى} [اَلْبَقَرَةِ: ١٢٥].", idn: "10- Lalu beliau menuju Maqam Ibrahim dan membaca ayat: 'Dan jadikanlah sebagian Maqam Ibrahim tempat shalat' (Al-Baqarah: 125).", note: "2 في 'ب': 'تقدم'." },
+                { id: "m11", ar: "١١- فَصَلَّى رَكْعَتَيْنِ، فَجَعَلَ اَلْمَقَامَ بَيْنَهُ وَبَيْنَ اَلْبَيْتِ.", idn: "11- Beliau shalat dua rakaat dengan posisi Maqam Ibrahim berada di antara beliau dan Ka'bah." },
+                { id: "m12", ar: "١٢- وَفِي رِوَايَةٍ: أَنَّهُ قَرَأَ فِي اَلرَّكْعَتَيْنِ: {قُلْ هُوَ اللَّهُ أَحَدٌ} {قُلْ يَا أَيُّهَا الْكَافِرُونَ}.", idn: "12- Dalam sebuah riwayat: Beliau membaca surah Al-Ikhlas dan Al-Kafirun pada dua rakaat tersebut." },
+                { id: "m13", ar: "١٣- ثُمَّ رَجَعَ إِلَى اَلرُّكْنِ وَاسْتَلَمَهُ،", idn: "13- Kemudian beliau kembali ke Hajar Aswad dan menyentuhnya." }
+            ]},
+            { id: 4, title: "Sa'i Safa & Marwah (14-22)", icon: "⛰️", cards: [
+                { id: "m14", ar: "١٤- ثُمَّ خَرَجَ مِنْ اَلْبَابِ إِلَى اَلصَّفَا،", idn: "14- Lalu beliau keluar melalui pintu menuju bukit Safa." },
+                { id: "m15", ar: "١٥- فَلَمَّا دَنَا مِنْ اَلصَّفَا قَرَأَ: {إِنَّ الصَّفَا وَالْمَرْوَةَ مِنْ شَعَائِرِ اللَّهِ} [اَلْبَقَرَةِ: ١٥٨].", idn: "15- Tatkala mendekati bukit Safa, beliau membaca ayat: 'Sesungguhnya Safa dan Marwah adalah sebagian dari syiar Allah' (Al-Baqarah: 158)." },
+                { id: "m16", ar: "١٦- فَرَقَى عَلَيْهِ حَتَّى رَأَى اَلْبَيْتَ،", idn: "16- Beliau menaiki bukit tersebut hingga melihat Ka'bah." },
+                { id: "m17", ar: "١٧- فَاسْتَقْبَلَ اَلْقِبْلَةَ،", idn: "17- Beliau pun menghadap kiblat." },
+                { id: "m18", ar: "١٨- فَوَحَّدَ الله وكبره، قال: \"لَا إِلَهَ إِلَّا اَللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ اَلْمُلْكُ وَلَهُ اَلْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، لَا إِلَهَ إِلَّا اَللَّهُ وَحْدَهُ، أَنْجَزَ وَعْدَهُ، وَنَصَرَ عَبْدَهُ، وَهَزَمَ اَلْأَحْزَابَ وَحْدَهُ\". ثُمَّ دَعَا بَيْنَ ذَلِكَ، قَالَ مِثْلَ هذا ثلاث مرات.", idn: "18- Beliau mengesakan Allah dan bertakbir, sembari mengucapkan: 'Tidak ada sesembahan yang berhak disembah kecuali Allah semata, tidak ada sekutu bagi-Nya, milik-Nya segala kerajaan dan pujian, dan Dia Maha Kuasa atas segala sesuatu. Tidak ada sesembahan yang berhak disembah kecuali Allah semata, Dia menepati janji-Nya, menolong hamba-Nya, dan menghancurkan golongan musuh sendirian.' Kemudian beliau berdoa di antara hal itu, beliau mengucapkan hal tersebut tiga kali." },
+                { id: "m19", ar: "١٩- ثم نزل ومشى إلى المروة،", idn: "19- Kemudian beliau turun dan berjalan menuju bukit Marwah." },
+                { id: "m20", ar: "٢٠- حتى إذا انصبت قدماه في بطن الوادي سعى،", idn: "20- Hingga ketika kaki beliau menapak di dasar lembah, beliau melakukan lari kecil (sa'i)." },
+                { id: "m21", ar: "٢١- حتى إذا صعدتا مشى،", idn: "21- Dan ketika jalan mulai menanjak, beliau kembali berjalan biasa." },
+                { id: "m22", ar: "٢٢- حَتَّى أَتَى اَلْمَرْوَةَ، فَفَعَلَ عَلَى اَلْمَرْوَةِ كَمَا فَعَلَ عَلَى اَلصَّفَا،", idn: "22- Hingga beliau sampai di bukit Marwah, dan di sana beliau melakukan hal yang sama seperti di Safa.", note: "1 ذكر في هامش 'ب': في الأصل مكان هذه الزيادة: 'فنادى وهو على المروة والناس تحته' ولا أصل لها في مسلم ولا في غيره." }
+            ]},
+            { id: 5, title: "Perintah Tahallul & Kedatangan Ali (23-27)", icon: "👥", cards: [
+                { id: "m23", ar: "٢٣- حَتَّى إِذَا كَانَ آخِرُ طَوَافِهِ عَلَى اَلْمَرْوَةِ، فَقَالَ: \"لَوْ أَنِّي اِسْتَقْبَلْتُ مِنْ أَمْرِي مَا اِسْتَدْبَرْتُ لَمْ أَسُقْ اَلْهَدْيَ، وَجَعَلْتُهَا عُمْرَةً، فَمَنْ كَانَ مِنْكُمْ لَيْسَ مَعَهُ هدي فليحل وليجعلها عمرة\".", idn: "23- Hingga pada putaran terakhir di Marwah, beliau bersabda: 'Seandainya aku tahu apa yang akan terjadi di akhir urusanku sebagaimana aku tahu di permulaannya, niscaya aku tidak membawa hadyu (hewan kurban) dan akan kujadikan ibadah ini sebagai umrah, maka barangsiapa di antara kalian yang tidak membawa hadyu hendaklah ia bertahallul dan menjadikannya umrah'." },
+                { id: "m24", ar: "٢٤- فَقَامَ سُرَاقَةُ بْنُ مَالِكِ بْنِ جُعْشُمٍ، فَقَالَ: يَا رَسُولَ اَللَّهِ، أَلِعَامِنَا هَذَا، أَمْ لِأَبَدٍ؟ فَشَبَّكَ رَسُولُ اَللَّهِ صلى الله عليه وسلم أَصَابِعَهُ وَاحِدَةً فِي اَلْأُخْرَى، وَقَالَ: \"دَخَلَتْ اَلْعُمْرَةُ فِي اَلْحَجِّ -مَرَّتَيْنِ- لَا، بَلْ لِأَبَدِ أَبَدٍ\".", idn: "24- Suraqah bin Malik bin Ju'syum berdiri lalu bertanya: 'Wahai Rasulullah, apakah ini untuk tahun ini saja atau untuk selamanya?' Rasulullah ﷺ menjalin jari-jemarinya satu sama lain lalu bersabda: 'Umrah telah masuk ke dalam haji (beliau mengucapkannya dua kali) tidak, bahkan untuk selama-lamanya'." },
+                { id: "m25", ar: "٢٥- وَقَدِمَ عَلِيٌّ مِنْ اَلْيَمَنِ بِبُدْنِ اَلنَّبِيِّ صلى الله عليه وسلم (فَوَجَدَ فَاطِمَةَ مِمَّنْ حَلَّ، وليست ثيابًا صبيغًا واكتحلت، فأنكر ذلك عليها، فقالت: إن أبي أمرني بهذا، قال: فكان علي يقول بالعراق: فذهبت إِلَى رَسُولِ اَللَّهِ صلى الله عليه وسلم محرشًا على فاطمة للذي صنعت، مستفتيًا لرسول الله صلى الله عليه وسلم فيما ذكرت عنه، فأخبرته أني أنكرت عليها، فقال: \"صَدَقَتْ، صَدَقَتْ)، مَاذَا قُلْتَ حِينَ فَرَضْتَ اَلْحَجَّ؟\" قَالَ: قُلْتُ: اَللَّهُمَّ إِنِّي أهلُّ بِمَا أَهَلَّ بِهِ رَسُولُكَ. قَالَ: \"فَإِنَّ مَعِيَ اَلْهَدْيَ فَلَا تَحِلُّ\".", idn: "25- Ali datang dari Yaman membawa unta kurban milik Nabi ﷺ. Ia mendapati Fatimah termasuk orang yang telah bertahallul, mengenakan pakaian yang dicelup warna dan bercelak. Ali mengingkari hal itu padanya, Fatimah berkata: 'Ayahku yang menyuruhku melakukan ini.' Ali (saat di Irak) menceritakan: 'Maka aku pergi menemui Rasulullah ﷺ mengadukan Fatimah atas apa yang ia lakukan, sekaligus meminta fatwa kepada Rasulullah ﷺ membenarkan apa yang disebutkan Fatimah. Aku sampaikan bahwa aku mengingkarinya.' Nabi bersabda: 'Dia benar, dia benar. Apa yang engkau ucapkan saat berniat haji?' Ali menjawab: 'Ya Allah, aku berihram dengan apa yang Rasul-Mu berihram dengannya.' Nabi bersabda: 'Sesungguhnya aku membawa hadyu, maka janganlah engkau bertahallul'.", note: "1 ليست هذه القطعة من الحديث مذكورة في نسخة 'ب' وهي في 'ط'. 2 في المطبوع 'للنبي'، والمثبت من مسلم، ونسخة 'ب'. 3 ليست في المطبوع، وأثبته من مسلم." },
+                { id: "m26", ar: "٢٦- قَالَ: فَكَانَ جَمَاعَةُ اَلْهَدْيِ اَلَّذِي قَدِمَ بِهِ عَلِيٌّ مِنْ اَلْيَمَنِ، وَاَلَّذِي أَتَى بِهِ اَلنَّبِيُّ صلى الله عليه وسلم مِائَةً.", idn: "26- Total hewan kurban (hadyu) yang dibawa Ali dari Yaman dan yang dibawa Nabi ﷺ berjumlah seratus ekor." },
+                { id: "m27", ar: "٢٧- قَالَ: فَحَلَّ اَلنَّاسُ كُلُّهُمْ، وَقَصَّرُوا، إِلَّا اَلنَّبِيَّ صلى الله عليه وسلم وَمَنْ كَانَ مَعَهُ هَدْيٌ.", idn: "27- Maka seluruh jamaah bertahallul dan memotong rambut mereka (tahallul umrah), kecuali Nabi ﷺ dan mereka yang membawa hadyu." }
+            ]},
+            { id: 6, title: "Mina & Khutbah Arafah (28-34)", icon: "⛺", cards: [
+                { id: "m28", ar: "٢٨- فَلَمَّا كَانَ يَوْمُ اَلتَّرْوِيَةِ تَوَجَّهُوا إِلَى مِنًى،", idn: "28- Tatkala tiba hari Tarwiyah (8 Dzulhijjah), mereka berangkat menuju Mina.", note: "1 هو اليوم الثامن من ذي الحجة." },
+                { id: "m29", ar: "٢٩- فَأَهَلُّوا بِالْحَجِّ.", idn: "29- Mereka pun memulai ihram untuk haji." },
+                { id: "m30", ar: "٣٠- وَرَكِبَ اَلنَّبِيُّ صلى الله عليه وسلم فَصَلَّى بِهَا اَلظُّهْرَ وَالْعَصْرَ، وَالْمَغْرِبَ وَالْعِشَاءَ وَالْفَجْرَ،", idn: "30- Nabi ﷺ berkendara menuju Mina dan melaksanakan shalat Dzuhur, Ashar, Maghrib, Isya, dan Fajar di sana." },
+                { id: "m31", ar: "٣١- ثُمَّ مَكَثَ قَلِيلًا حَتَّى طَلَعَتْ اَلشَّمْسُ،", idn: "31- Beliau menetap sejenak hingga matahari terbit." },
+                { id: "m32", ar: "٣٢- وَأَمَرَ بِقُبَّةٍ مَنْ شَعَرٍ تُضْرَبُ لَهُ بِنَمِرَةَ، فَسَارَ رَسُولُ اَللَّهِ صلى الله عليه وسلم وَلَا تَشُكَّ قُرَيْشٌ إِلَّا أَنَّهُ وَاقِفٌ عِنْدَ اَلْمَشْعَرِ اَلْحَرَامِ، كَمَا كَانَتْ قُرَيْشٌ تَصْنَعُ فِي اَلْجَاهِلِيَّةِ، فَأَجَازَ رَسُولُ اَللَّهِ صلى الله عليه وسلم حَتَّى أَتَى عَرَفَةَ، فَوَجَدَ اَلْقُبَّةَ قَدْ ضُرِبَتْ لَهُ بِنَمِرَةَ، فَنَزَلَ بِهَا،", idn: "32- Beliau memerintahkan agar didirikan tenda dari kain bulu untuk beliau di Namirah. Rasulullah ﷺ pun berjalan, dan kaum Quraisy tidak ragu bahwa beliau pasti akan wukuf di Masy'aril Haram (Muzdalifah) sebagaimana kebiasaan Quraisy di masa Jahiliyah. Namun Rasulullah ﷺ melewatinya hingga tiba di Arafah. Beliau mendapati tenda telah didirikan untuknya di Namirah, lalu beliau singgah di sana.", note: "1 موضع بجنب عرفات، وليست من عرفات. 2 أي: جاوز المزدلفة ولم يقف بها، بل توجه إلى عرفات." },
+                { id: "m33", ar: "٣٣- حَتَّى إِذَا زاغت الشمس أمر بالقصواء فرحلت له،", idn: "33- Hingga ketika matahari tergelincir, beliau memerintahkan Al-Qaswa disiapkan pelananya." },
+                { id: "m34", ar: "٣٤- فَأَتَى بَطْنَ اَلْوَادِي فَخَطَبَ اَلنَّاسَ: وَقَالَ: \"إِنَّ دِمَاءَكُمْ وَأَمْوَالَكُمْ حَرَامٌ عَلَيْكُمْ، كَحُرْمَةِ يَوْمِكُمْ هَذَا، فِي شَهْرِكُمْ هَذَا، فِي بَلَدِكُمْ هَذَا، أَلَا كُلُّ شَيْءٍ مِنْ أَمْرِ اَلْجَاهِلِيَّةِ تَحْتَ قَدَمَيَّ مَوْضُوعٌ، وَدِمَاءُ اَلْجَاهِلِيَّةِ مَوْضُوعَةٌ، وَإِنَّ أَوَّلَ دَمٍ أَضَعُ مِنْ دِمَائِنَا: دَمُ اِبْنِ رَبِيعَةَ بْنِ اَلْحَارِثِ -كَانَ مُسْتَرْضِعًا فِي بَنِي سَعْدٍ فَقَتَلَتْهُ هُذَيْلٌ- وَرِبَا اَلْجَاهِلِيَّةِ مَوْضُوعٌ، وَأَوَّلُ رِبًا أَضَعُ مِنْ رِبَانَا رِبَا عَبَّاسِ بْنَ عَبْدِ اَلْمُطَّلِبِ، فَإِنَّهُ مَوْضُوعٌ كُلُّهُ، فَاتَّقُوا اَللَّهَ فِي اَلنِّسَاءِ، فَإِنَّكُمْ أَخَذْتُمُوهُنَّ بِأَمَانَةِ اَللَّهِ، وَاسْتَحْلَلْتُمْ فُرُوجَهُنَّ بِكَلِمَةِ الله، ولكم عليهم ألا يوطئن فرشكم أَحَدًا تَكْرَهُونَهُ، فَإِنْ فَعَلْنَ ذَلِكَ فَاضْرِبُوهُنَّ ضَرْبًا غَيْرَ مُبَرِّحٍ، وَلَهُنَّ عَلَيْكُمْ رِزْقُهُنَّ وَكِسْوَتُهُنَّ بِالْمَعْرُوفِ. وَقَدْ تَرَكْتُ فِيكُمْ مَا لَنْ تَضِلُّوا بَعْدَهُ إِنْ اِعْتَصَمْتُمْ بِهِ، كِتَابُ اَللَّهِ. وَأَنْتُمْ تُسْأَلُونَ عَنِّي، فَمَا أَنْتُمْ قَائِلُونَ؟\" قَالُوا: نَشْهَدُ أَنَّكَ قَدْ بَلَّغْتَ، وَأَدَّيْتَ، وَنَصَحْتَ، فَقَالَ بِإِصْبُعِهِ اَلسَّبَّابَةِ يَرْفَعُهَا إِلَى اَلسَّمَاءِ وَيَنْكُبُهَا إِلَى اَلنَّاسِ: \"اَللَّهُمَّ اشهد، اللهم اشهد\"، ثلاث مرات،", idn: "34- Beliau tiba di dasar lembah (Uranah) lalu berkhutbah kepada jamaah: 'Sesungguhnya darah dan harta kalian adalah haram (suci/terhormat) bagi kalian, sebagaimana terhormatnya hari kalian ini, di bulan kalian ini, di negeri kalian ini. Ketahuilah, segala sesuatu dari perkara Jahiliyah berada di bawah telapak kakiku ini (telah dihapuskan), dan darah-darah Jahiliyah telah dihapuskan. Darah pertama yang aku hapuskan dari darah kita adalah darah Ibnu Rabi'ah bin Al-Harits—ia sedang disusukan di Bani Sa'd lalu dibunuh oleh Hudzail—. Dan riba Jahiliyah juga telah dihapuskan, dan riba pertama yang aku hapuskan dari riba kita adalah riba Abbas bin Abdul Muthalib, sesungguhnya itu dihapuskan semuanya. Bertakwalah kepada Allah dalam urusan wanita, karena kalian mengambil mereka dengan amanah Allah, dan kalian menghalalkan kemaluan mereka dengan kalimat Allah. Dan hak kalian atas mereka adalah agar mereka tidak mengizinkan orang yang kalian benci menginjak tempat tidur kalian. Jika mereka melakukan itu, maka pukullah mereka dengan pukulan yang tidak melukai. Dan hak mereka atas kalian adalah rezeki dan pakaian mereka dengan cara yang ma'ruf. Sungguh, aku telah meninggalkan di tengah-tengah kalian sesuatu yang kalian tidak akan tersesat setelahnya jika kalian berpegang teguh kepadanya: Kitab Allah. Dan kalian akan ditanya tentangku, maka apa yang akan kalian katakan?' Mereka menjawab: 'Kami bersaksi bahwa engkau telah menyampaikan, menunaikan amanah, dan menasihati.' Maka beliau memberi isyarat dengan jari telunjuknya, mengangkatnya ke langit dan menunjukkannya kepada manusia seraya bersabda: 'Ya Allah saksikanlah, Ya Allah saksikanlah', tiga kali.", note: "3 أي: وادي عُرَنة، يحد عرفة من الجهة الغربية، وليس من عرفة. 1 في 'ط' وكذلك في مسلم: 'ينكتها'. وقد بيَّن الشراح أن بعض الطرق وردت بالتاء وبعضها بالباء، والباء أقرب في المعنى." }
+            ]},
+            { id: 7, title: "Arafah & Perjalanan ke Muzdalifah (35-42)", icon: "🤲", cards: [
+                { id: "m35", ar: "٣٥- ثُمَّ أَذَّنَ بِلَالٌ، ثُمَّ أَقَامَ فَصَلَّى اَلظُّهْرَ، ثُمَّ أَقَامَ فَصَلَّى اَلْعَصْرَ،", idn: "35- Kemudian Bilal mengumandangkan azan dan iqamah, lalu Nabi shalat Dzuhur, kemudian iqamah lagi dan shalat Ashar." },
+                { id: "m36", ar: "٣٦- وَلَمْ يصلِّ بَيْنَهُمَا شَيْئًا.", idn: "36- Beliau tidak mengerjakan shalat sunnah apa pun di antara keduanya." },
+                { id: "m37", ar: "٣٧- ثُمَّ رَكِبَ حَتَّى أَتَى اَلْمَوْقِفَ،", idn: "37- Kemudian beliau berkendara hingga tiba di tempat wuquf." },
+                { id: "m38", ar: "٣٨- فَجَعَلَ بَطْنَ نَاقَتِهِ اَلْقَصْوَاءِ إِلَى الصَّخَرَاتِ، وَجَعَلَ حَبْلَ المشاة بين يديه، واستقبل القبلة،", idn: "38- Beliau memposisikan perut untanya menghadap bebatuan besar, dan menjadikan jalur pejalan kaki berada di depannya, lalu beliau menghadap kiblat.", note: "2 هي صخرات ملتصقة بالأرض، تقع خلف جبل عرفات، فهي عنه شرقا... 3 حبل المشاة بالحاء، هو الطريق الذي يسلكه المشاة، ويكون هذا الحبل أمام الواقف على الصخرات وبين يديه." },
+                { id: "m39", ar: "٣٩- فلم يزل واقفًا حتى غربت الشمس، وذهبت الصفرة قليلًا حتى غاب القرص،", idn: "39- Beliau terus berdiri wuquf hingga matahari terbenam, dan rona kuning agak menghilang hingga piringan matahari benar-benar tenggelam." },
+                { id: "m40", ar: "٤٠- وأردف أسامة بن زيد خلفه، ودفع رسول الله صلى الله عليه وسلم وَقَدْ شَنَقَ لِلْقَصْوَاءِ اَلزِّمَامَ، حَتَّى إِنَّ رَأْسَهَا يصيب مَوْرِكَ رَحْلِهِ،", idn: "40- Beliau membonceng Usamah bin Zaid di belakangnya, lalu Rasulullah ﷺ bertolak pergi. Beliau menarik kuat tali kekang Al-Qaswa, sampai-sampai kepala unta tersebut menyentuh ujung pelana yang biasa dipijak.", note: "1 شنق: ضمَّ وضيق، والزمام: هو الخيط الذي يشد إلى الحلقة التي في أنف البعير ليقاد به ويمنع به. 2 المورك: الموضع من الرحل يجعل عليها الراكب رجله، والرحل: ما يوضع على ظهر البعير للركوب." },
+                { id: "m41", ar: "٤١- وَيَقُولُ بِيَدِهِ اَلْيُمْنَى: \"أَيُّهَا اَلنَّاسُ، اَلسَّكِينَةَ، اَلسَّكِينَةَ\"، كُلَّمَا أَتَى حَبْلًا مِنْ اَلْحِبَالِ أَرْخَى لَهَا قَلِيلًا حَتَّى تَصْعَدَ،", idn: "41- Beliau memberi isyarat dengan tangan kanannya: 'Wahai manusia, tenanglah! Tenanglah!'. Setiap kali beliau melewati gundukan bukit pasir, beliau melonggarkan sedikit tali kekangnya agar unta itu bisa naik.", note: "3 الحبل: بالحاء، التل اللطيف من الرمل الضخم." },
+                { id: "m42", ar: "٤٢- حَتَّى أَتَى اَلْمُزْدَلِفَةَ،", idn: "42- Hingga beliau tiba di Muzdalifah." }
+            ]},
+            { id: 8, title: "Mabit di Muzdalifah (43-45)", icon: "🌌", cards: [
+                { id: "m43", ar: "٤٣- فَصَلَّى بِهَا اَلْمَغْرِبَ وَالْعِشَاءَ، بِأَذَانٍ وَاحِدٍ وَإِقَامَتَيْنِ،", idn: "43- Di Muzdalifah beliau melaksanakan shalat Maghrib dan Isya dengan satu azan dan dua iqamah." },
+                { id: "m44", ar: "٤٤- وَلَمْ يُسَبِّحْ بَيْنَهُمَا شَيْئًا،", idn: "44- Beliau tidak mengerjakan shalat sunnah di antara keduanya." },
+                { id: "m45", ar: "٤٥- ثُمَّ اِضْطَجَعَ حتى طلع الفجر،", idn: "45- Kemudian beliau berbaring (tidur) hingga fajar menyingsing.", note: "4 صوَّب الشيخ: أنه لا يجوز الدفع من مزدلفة قبل الفجر، إلا لأهل العذر، فيرخص لهم قبيل الفجر." }
+            ]},
+            { id: 9, title: "Masy'aril Haram & Melontar Jumrah (46-57)", icon: "🎯", cards: [
+                { id: "m46", ar: "٤٦- وصلى الفجر حين تبين له الصبح بأذان وإقامة،", idn: "46- Beliau melaksanakan shalat fajar tepat saat waktu Subuh tampak jelas baginya, dengan satu azan dan satu iqamah." },
+                { id: "m47", ar: "٤٧- ثم ركب القصواء حتى أتى المشعر الحرام،", idn: "47- Lalu beliau menunggangi Al-Qaswa hingga tiba di Masy'aril Haram." },
+                { id: "m48", ar: "٤٨- فاستقبل القبلة،", idn: "48- Beliau menghadap ke arah kiblat." },
+                { id: "m49", ar: "٤٩- فدعاه، وكبرَّه، وهَلَّلَهُ، ووحده،", idn: "49- Di sana beliau berdoa, bertakbir, bertahlil, dan mengesakan Allah." },
+                { id: "m50", ar: "٥٠- فلم يزل واقفًا حتى أسفر جدًّا،", idn: "50- Beliau terus berdiri di sana hingga langit menjadi sangat terang." },
+                { id: "m51", ar: "٥١- فدفع قبل أن تطلع الشمس،", idn: "51- Beliau berangkat meninggalkan (Muzdalifah) sebelum matahari terbit." },
+                { id: "m52", ar: "٥٢- وَأَرْدَفَ اَلْفَضْلَ بْنَ اَلْعَبَّاسِ، حَتَّى أَتَى بَطْنَ مُحَسِّر، فَحَرَّكَ قَلِيلًا،", idn: "52- Beliau membonceng Al-Fadhl bin Abbas hingga tiba di lembah Muhassir, lalu sedikit mempercepat laju untanya.", note: "1 مُحَسِّر: وادٍ يقع بين مزدلفة ومنى، أسرع النبي صلى الله عليه وسلم فيه، فكان الإسراع فيه سُنَّة." },
+                { id: "m53", ar: "٥٣- ثُمَّ سَلَكَ اَلطَّرِيقَ اَلْوُسْطَى اَلَّتِي تَخْرُجُ عَلَى اَلْجَمْرَةِ اَلْكُبْرَى،", idn: "53- Kemudian beliau menempuh jalan tengah yang tembus ke arah Jumrah Aqabah (Jumrah Kubra)." },
+                { id: "m54", ar: "٥٤- حَتَّى أَتَى اَلْجَمْرَةَ اَلَّتِي عِنْدَ اَلشَّجَرَةِ، فَرَمَاهَا بِسَبْعِ حَصَيَاتٍ،", idn: "54- Hingga beliau sampai di Jumrah yang berada di dekat pohon, lalu beliau melemparnya dengan tujuh butir kerikil.", note: "2 كانت عند الجمرة الكبرى -جمرة العقبة- شجرة، لكنها أزيلت قديما. 3 بيَّن الشيخ أن الصواب، أن الرامي يستقبل الجمرة وقت الرمي؛ لفعل النبي صلى الله عليه وسلم." },
+                { id: "m55", ar: "٥٥- يكبر مع كل حصاة منها،", idn: "55- Beliau mengucapkan takbir setiap kali melempar satu butir kerikil." },
+                { id: "m56", ar: "٥٦- مثل حصى الْخَذْف،", idn: "56- Kerikil yang digunakan berukuran kecil (seperti batu kerikil untuk melontar / sebesar biji kacang)." },
+                { id: "m57", ar: "٥٧- رمى من بطن الوادي،", idn: "57- Beliau melemparnya dari dasar lembah." }
+            ]},
+            { id: 10, title: "Menyembelih & Tawaf Ifadah (58-64)", icon: "✨", cards: [
+                { id: "m58", ar: "٥٨- ثم انصرف إلى المنحر،", idn: "58- Setelah itu beliau menuju tempat penyembelihan kurban (Manhar)." },
+                { id: "m59", ar: "٥٩- فنحر ثلاثًا وستين بيده،", idn: "59- Beliau menyembelih 63 ekor unta dengan tangan beliau sendiri." },
+                { id: "m60", ar: "٦٠- ثم أعطى عليًّا فنحر ما غبر، وأشركه في هديه،", idn: "60- Kemudian beliau menyerahkan kepada Ali untuk menyembelih sisanya, dan mengikutsertakan Ali dalam hewan kurbannya." },
+                { id: "m61", ar: "٦١- ثم أمر من كل بُدنة بِبَضْعة، فجعلت في قدر، وطبخت، فأكلا من لحمها، وشربا من مرقها.", idn: "61- Lalu beliau memerintahkan agar diambil sepotong daging dari tiap unta untuk dimasak dalam periuk. Keduanya pun memakan dagingnya dan meminum kuahnya." },
+                { id: "m62", ar: "٦٢- ثم ركب رسول الله صلى الله عليه وسلم فَأَفَاضَ إِلَى اَلْبَيْتِ،", idn: "62- Kemudian Rasulullah ﷺ berkendara menuju Ka'bah untuk melaksanakan Tawaf Ifadah.", note: "1 ردَّ الشيخ على القائلين بجواز تأخير طواف الإفاضة عن أيام منى 'المختارات، ص: 65'." },
+                { id: "m63", ar: "٦٣- فَصَلَّى بِمَكَّةَ اَلظُّهْرَ،", idn: "63- Beliau melaksanakan shalat Dzuhur di Makkah." },
+                { id: "m64", ar: "٦٤- فَأَتَى بَنِي عَبْدِ اَلْمُطَّلِبِ، يَسْقُونَ عَلَى زَمْزَمَ، فَقَالَ: \"اِنْزِعُوا بَنِي عَبْدِ اَلْمُطَّلِبِ، فَلَوْلَا أَنْ يَغْلِبَكُمْ اَلنَّاسُ عَلَى سِقَايَتِكُمْ لَنَزَعْتُ مَعَكُمْ، فَنَاوَلُوهُ دَلْوًا فَشَرِبَ مِنْهُ\" رَوَاهُ مُسْلِمٌ.", idn: "64- Beliau mendatangi Bani Abdul Muthalib yang sedang menimba air di Zamzam, lalu bersabda: 'Tariklah (timbalah) wahai Bani Abdul Muthalib, seandainya tidak khawatir orang-orang akan mengalahkan kalian dalam urusan menimba air kalian, niscaya aku akan ikut menimba bersama kalian.' Mereka kemudian memberikan ember berisi air dan beliau pun meminumnya (H.R. Muslim).", note: "2 أخرجه مسلم '1218'. وقد اختصره الشيخ هنا." }
+            ]},
+            { id: 11, title: "Penutup (273)", icon: "📖", cards: [
+                { id: "273", ar: "٢٧٣- وَكَانَ صلى الله عليه وسلم يَفْعَلُ اَلْمَنَاسِكَ، وَيَقُولُ لِلنَّاسِ: \"خُذُوا عني مناسككم\".", idn: "273- Beliau ﷺ senantiasa melaksanakan manasik haji sembari bersabda kepada orang-orang: 'Ambillah dariku tata cara manasik haji kalian'.", note: "3 رواه أحمد '318/3، 332، 337، 367'، ومسلم '1297'، وغيرهما." },
+                { id: "p-last", ar: "فَأَكْمَلُ مَا يَكُونُ مِنْ اَلْحَجِّ: اَلِاقْتِدَاءُ بِالنَّبِيِّ صلى الله عليه وسلم فِيهِ وَأَصْحَابِهِ، رضي الله عنهم.", idn: "Maka haji yang paling sempurna adalah yang dilakukan dengan mengikuti teladan Nabi ﷺ dan para sahabatnya r.a." }
+            ]}
+        ];
+
+        window.startApp = () => {
+            document.getElementById('landingPage').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('landingPage').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                document.getElementById('mainApp').classList.add('fade-in');
+                initApp();
+            }, 500);
+        };
+
+        const initApp = () => {
+            signInAnonymously(auth).then(() => {
+                onAuthStateChanged(auth, user => {
+                    currentUser = user;
+                    updateUI();
+                });
+            });
+        };
+
+        const updateUI = () => {
+            renderPageContent();
+            renderNav();
+            document.getElementById('btnPrev').disabled = currentPage === 0;
+            document.getElementById('btnNext').disabled = currentPage === (sections.length - 1);
+            document.getElementById('pageIndicator').innerText = `${currentPage + 1}/${sections.length}`;
+        };
+
+        const renderPageContent = () => {
+            const section = sections[currentPage];
+            const container = document.getElementById('page-renderer');
+            container.innerHTML = `
+                <div class="flex items-center gap-4 mb-8 justify-start flex-row-reverse border-b-2 border-emerald-100 pb-4 fade-in">
+                    <h2 class="text-2xl md:text-3xl font-bold text-emerald-900">${section.title}</h2>
+                    <span class="text-4xl bg-emerald-50 p-3 rounded-2xl shadow-inner">${section.icon}</span>
+                </div>
+                <div class="space-y-6">
+                    ${section.cards.map(card => `
+                        <div class="bg-white rounded-3xl p-6 shadow-sm border-r-4 border-emerald-500 relative fade-in">
+                            <p class="arabic-text text-2xl md:text-3xl text-slate-800 mb-6" dir="rtl">${card.ar}</p>
+                            <div class="border-t border-slate-100 pt-4 latin-text text-slate-600 text-[15px] leading-relaxed mb-4">${card.idn}</div>
+                            <div class="flex justify-end">
+                                <button onclick="window.toggleSyarah('${card.id}')" class="flex items-center gap-2 text-emerald-600 font-bold hover:text-emerald-800 transition-colors bg-emerald-50 px-4 py-2 rounded-xl group/btn">
+                                    <svg id="chevron-${card.id}" class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                    <span>🖋️ Syarah & Catatan</span>
+                                </button>
+                            </div>
+                            <div id="syarah-${card.id}" class="syarah-dropdown latin-text">
+                                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 mt-2">
+                                    <div class="flex gap-2 mb-3">
+                                        <button onclick="window.setDir('${card.id}', 'ltr')" class="px-3 py-1 rounded-full text-[10px] font-extrabold bg-white border border-slate-200 text-slate-500 hover:bg-emerald-600 hover:text-white">Latin</button>
+                                        <button onclick="window.setDir('${card.id}', 'rtl')" class="px-3 py-1 rounded-full text-[10px] font-extrabold bg-white border border-slate-200 text-slate-500 hover:bg-emerald-600 hover:text-white">Arab</button>
+                                    </div>
+                                    <textarea id="input-${card.id}" oninput="window.autoExpand(this)" class="w-full bg-transparent border-none focus:ring-0 text-slate-700 leading-relaxed resize-none overflow-hidden" placeholder="Tulis syarah di sini..."></textarea>
+                                    <div class="flex justify-end mt-2 pt-2 border-t border-slate-200">
+                                        <button id="saveBtn-${card.id}" onclick="window.saveSyarah('${card.id}')" class="bg-emerald-600 text-white px-5 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-700 transition-all shadow-md">Simpan</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        };
+
+        const renderNav = () => {
+            const nav = document.getElementById('navLinks');
+            nav.innerHTML = sections.map((s, i) => `
+                <button onclick="window.goToPage(${i})" class="w-full text-right px-6 py-4 flex items-center justify-end gap-3 hover:bg-emerald-50 ${i === currentPage ? 'bg-emerald-50 text-emerald-700 font-bold border-r-4 border-r-emerald-500' : 'text-slate-600'}">
+                    <span>${s.title}</span><span class="text-xl">${s.icon}</span>
+                </button>
+            `).join('');
+        };
+
+        window.goToPage = (i) => { currentPage = i; updateUI(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+        
+        window.syarahListeners = window.syarahListeners || {};
+
+        window.toggleSyarah = async (cardId) => {
+            const dropdown = document.getElementById(`syarah-${cardId}`);
+            const chevron = document.getElementById(`chevron-${cardId}`);
+            const isOpening = !dropdown.classList.contains('open');
+            dropdown.classList.toggle('open');
+            chevron.classList.toggle('rotate-180', isOpening);
+            if (isOpening) {
+                const textarea = document.getElementById(`input-${cardId}`);
+                textarea.value = "Memuat...";
+                const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'syarah', cardId);
+                
+                // Memasang listener realtime (onSnapshot)
+                window.syarahListeners[cardId] = onSnapshot(docRef, (snap) => {
+                    if (snap.exists()) {
+                        // Hanya update teks jika user tidak sedang aktif mengetik di kolom ini
+                        // untuk mencegah kursor melompat saat sync data masuk
+                        if (document.activeElement !== textarea) {
+                            textarea.value = snap.data().text || "";
+                            textarea.dir = snap.data().dir || "ltr";
+                            textarea.style.textAlign = snap.data().dir === "rtl" ? "right" : "left";
+                            window.autoExpand(textarea);
+                        }
+                    } else {
+                        const card = sections.flatMap(s => s.cards).find(c => c.id === cardId);
+                        if (textarea.value === "Memuat...") {
+                            textarea.value = card.note || "";
+                            textarea.dir = "rtl";
+                            textarea.style.textAlign = "right";
+                            window.autoExpand(textarea);
+                        }
+                    }
+                }, (error) => console.error("Realtime sync error:", error));
+            } else {
+                // Mematikan listener saat dropdown ditutup agar hemat memori
+                if (window.syarahListeners[cardId]) {
+                    window.syarahListeners[cardId]();
+                    delete window.syarahListeners[cardId];
+                }
+            }
+        };
+
+        window.autoExpand = (el) => { el.style.height = 'auto'; el.style.height = (el.scrollHeight) + 'px'; };
+        
+        window.setDir = (id, dir) => { 
+            const el = document.getElementById(`input-${id}`); 
+            el.dir = dir; 
+            el.style.textAlign = dir === "rtl" ? "right" : "left"; 
+            el.focus(); 
+        };
+
+        window.saveSyarah = async (cardId) => {
+            const textarea = document.getElementById(`input-${cardId}`);
+            const btn = document.getElementById(`saveBtn-${cardId}`);
+            btn.innerHTML = "..."; btn.disabled = true;
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'syarah', cardId);
+                await setDoc(docRef, { text: textarea.value, dir: textarea.dir, timestamp: Date.now() });
+                btn.innerHTML = "✓"; setTimeout(() => btn.innerHTML = "Simpan", 2000);
+            } catch (e) { btn.innerHTML = "!"; } finally { btn.disabled = false; }
+        };
+
+        document.getElementById('openSidebarBtn').onclick = () => { document.getElementById('sidebar').classList.remove('translate-x-full'); document.getElementById('sidebarOverlay').classList.remove('hidden'); };
+        document.getElementById('closeSidebarBtn').onclick = () => { document.getElementById('sidebar').classList.add('translate-x-full'); document.getElementById('sidebarOverlay').classList.add('hidden'); };
+        document.getElementById('btnPrev').onclick = () => window.goToPage(currentPage - 1);
+        document.getElementById('btnNext').onclick = () => window.goToPage(currentPage + 1);
+
+    </script>
+</body>
+</html>
