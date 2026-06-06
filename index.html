@@ -147,7 +147,9 @@
         const appId = "haji-interactive-final-fixed";
 
         let currentUser = null;
-        let currentPage = 0;
+        
+        // Memuat halaman terakhir dari localStorage, jika tidak ada, mulai dari 0
+        let currentPage = parseInt(localStorage.getItem('hajj_currentPage')) || 0;
 
         const sections = [
             { id: 0, title: "Pangkal Haji (269-272)", icon: "📜", cards: [
@@ -252,6 +254,7 @@
                 document.getElementById('landingPage').classList.add('hidden');
                 document.getElementById('mainApp').classList.remove('hidden');
                 document.getElementById('mainApp').classList.add('fade-in');
+                localStorage.setItem('hajj_currentPage', currentPage); // Simpan posisi saat baru mulai
                 initApp();
             }, 500);
         };
@@ -319,7 +322,12 @@
             `).join('');
         };
 
-        window.goToPage = (i) => { currentPage = i; updateUI(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+        window.goToPage = (i) => { 
+            currentPage = i; 
+            localStorage.setItem('hajj_currentPage', i); // Simpan posisi saat pindah halaman
+            updateUI(); 
+            window.scrollTo({ top: 0, behavior: 'smooth' }); 
+        };
         
         window.syarahListeners = window.syarahListeners || {};
 
@@ -388,6 +396,13 @@
         document.getElementById('closeSidebarBtn').onclick = () => { document.getElementById('sidebar').classList.add('translate-x-full'); document.getElementById('sidebarOverlay').classList.add('hidden'); };
         document.getElementById('btnPrev').onclick = () => window.goToPage(currentPage - 1);
         document.getElementById('btnNext').onclick = () => window.goToPage(currentPage + 1);
+
+        // Auto-skip Landing Page jika user sudah pernah membuka materi
+        if (localStorage.getItem('hajj_currentPage') !== null) {
+            document.getElementById('landingPage').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            initApp();
+        }
 
     </script>
 </body>
